@@ -1,0 +1,48 @@
+1.  What is Packet Sniffing?
+Packet sniffing is the process of capturing and analyzing data packets as they travel across a computer network. Every time a device communicates over a network — whether loading a webpage, sending an email, or streaming a video — it breaks the data into small units called packets. A packet sniffer intercepts these packets in real time, allowing the user to inspect their contents, including source and destination addresses, protocol information, and payload data.
+Packet sniffing has legitimate uses in network administration (diagnosing connectivity issues, monitoring traffic), cybersecurity (detecting intrusions and anomalies), and education (understanding how protocols work). It can also be misused for malicious purposes such as eavesdropping, which is why encrypted protocols like HTTPS and TLS are essential in modern networks.
+
+2.  Protocols Captured
+The sniffer was designed to capture and decode packets across multiple layers of the network stack:
+
+TCP (Transmission Control Protocol) – Reliable communication between devices.
+UDP (User Datagram Protocol) – Fast, connectionless data transfer.
+ICMP (Internet Control Message Protocol) – Used for network diagnostics such as ping requests.
+IP (Internet Protocol) – Handles addressing and routing of packets.
+
+3.  Tools & Technologies Used
+•	Python 3  —  core programming language
+•	Scapy  —  third-party library for packet capture and dissection (cross-platform)
+•	Npcap  —  Windows packet capture driver required by Scapy
+•	Command Prompt (Administrator)  —  execution environment (raw socket access requires elevated privileges)
+
+4.  How the Program Works
+The sniffer opens a raw network socket using Scapy's sniff() function, which captures all packets passing through the network interface before the operating system filters them. Each captured packet is passed to a callback function (handle_packet) which checks for the presence of each protocol layer and extracts relevant fields.
+The program follows the OSI model from bottom to top:
+•	Ethernet frame is parsed first for MAC addresses.
+•	IPv4 header is extracted for IP addresses and protocol type.
+•	Based on the protocol field, either TCP, UDP, or ICMP headers are parsed.
+•	If a raw payload exists, it is displayed as a formatted hex and ASCII dump.
+
+5.  Challenges Faced
+5.1  Administrator Privileges
+Raw socket access requires elevated system privileges. On Windows, the program must be run from a Command Prompt launched as Administrator. Without this, the OS blocks access to the network interface at the raw packet level.
+5.2  Windows Compatibility
+The initial version of the sniffer used Python's built-in socket library with AF_PACKET, which is Linux-only. The program was rewritten using Scapy to ensure it works on Windows. This also required installing Npcap, the Windows packet capture driver.
+5.3  Understanding Binary Protocol Headers
+Network protocol headers are stored as raw binary data. Parsing them correctly required understanding struct.unpack format strings and byte-order conventions (network byte order is big-endian). Getting the TCP data offset and flag bitmask calculations correct took careful attention to the protocol specification.
+5.4  High Packet Volume
+On an active network, packets arrive faster than they can be read individually. A packet limit argument was added to the program so that a specific number of packets can be captured and then the program stops, making it easier to review the output.
+
+6.  Learning Outcomes
+Through building and running this project, the following concepts were understood practically:
+•	Network packet structure: Every packet is a nested set of headers — Ethernet wraps IP, which wraps TCP/UDP, which wraps the application payload.
+•	Protocol identification: The EtherType field in Ethernet headers identifies IPv4 (0x0800); the protocol field in IPv4 headers identifies TCP (6), UDP (17), and ICMP (1).
+•	How data flows through the network: Data is encapsulated at each layer by the sender and de-encapsulated at each layer by the receiver — this is the fundamental principle of the OSI model.
+•	Scapy library: Scapy provides a high-level, Pythonic interface to capture and dissect packets, making it far more accessible than writing raw binary parsers manually.
+•	Security awareness: Unencrypted protocols (HTTP, plain DNS) expose readable payload data to anyone on the same network, reinforcing why HTTPS and encrypted DNS matter.
+•	Privilege model: Operating systems restrict raw socket access to administrators/root users as a security measure, preventing ordinary applications from snooping on network traffic.
+
+7.  Conclusion
+This project successfully demonstrates a functional network packet sniffer built entirely in Python using the Scapy library. The program captures live network traffic and displays structured information about each packet including MAC addresses, IP addresses, transport layer ports and flags, and raw payload data.
+Building this tool from scratch provided a hands-on understanding of how data is structured and transmitted across networks, how the layered protocol model works in practice, and how network security tools operate at a fundamental level.
