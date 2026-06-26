@@ -4,3 +4,7 @@ This project is a Basic Network Sniffer developed to monitor and analyze network
 
 TASK-2 : Phishing Awareness Training
 This project is a Phishing Awareness Training presentation designed to educate users about phishing attacks and cybersecurity best practices. The training explains how to identify phishing emails, detect fake websites, understand common social engineering tactics, and protect sensitive information from cybercriminals. It also includes real-world examples and a short interactive quiz to reinforce learning. The goal of this project is to improve cybersecurity awareness and help users recognize and avoid phishing threats.
+Live Demo: https://cute-sopapillas-610223.netlify.app
+
+
+
